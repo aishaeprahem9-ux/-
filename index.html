@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DoBucks</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <div class="brand">DoBucks</div>
+      <div id="online-required" class="online-banner">⚠️ التطبيق يتطلب اتصال بالإنترنت</div>
+    </header>
+
+    <main>
+      <!-- Auth -->
+      <section id="auth-section" class="card">
+        <div class="tabs">
+          <button class="tab active" data-tab="login-tab">تسجيل الدخول</button>
+          <button class="tab" data-tab="register-tab">حساب جديد</button>
+        </div>
+
+        <div id="login-tab" class="tab-content active">
+          <form id="login-form">
+            <label>البريد الإلكتروني
+              <input type="email" id="login-email" required />
+            </label>
+            <label>كلمة المرور
+              <input type="password" id="login-password" required />
+            </label>
+            <button type="submit" class="btn primary">دخول</button>
+          </form>
+        </div>
+
+        <div id="register-tab" class="tab-content">
+          <form id="register-form">
+            <label>الاسم الكامل
+              <input type="text" id="reg-name" placeholder="اختياري" />
+            </label>
+            <label>البريد الإلكتروني
+              <input type="email" id="reg-email" required />
+            </label>
+            <label>كلمة المرور
+              <input type="password" id="reg-password" required minlength="6" />
+            </label>
+            <label>رقم الهاتف
+              <input type="tel" id="reg-phone" placeholder="اختياري" />
+            </label>
+            <label>كود الإحالة (اختياري)
+              <input type="text" id="reg-referral" placeholder="مثال: DOB-1-ABCD" />
+            </label>
+            <button type="submit" class="btn primary">إنشاء حساب</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashboard" class="hidden">
+        <div class="grid">
+          <div class="card stats">
+            <div class="stat">
+              <div class="stat-label">الرصيد</div>
+              <div class="stat-value"><span id="balance">0</span> نقطة</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">حد اليوم</div>
+              <div class="stat-value"><span id="points-today">0</span>/<span id="daily-cap">80</span></div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">إعلانات اليوم</div>
+              <div class="stat-value"><span id="ads-today">0</span>/10</div>
+            </div>
+          </div>
+
+          <div class="card actions">
+            <button id="watch-ads-btn" class="btn secondary">🎥 مشاهدة الإعلانات (مرة يوميًا)</button>
+            <button id="withdraw-btn" class="btn accent" disabled>💸 سحب</button>
+          </div>
+
+          <div class="card referral">
+            <div>كود الإحالة الخاص بك:</div>
+            <div class="ref-row">
+              <input id="referral-code" readonly />
+              <button id="copy-ref" class="btn small">نسخ</button>
+            </div>
+            <div class="note">أرسل الكود لأصدقائك لزيادة أرباحك.</div>
+          </div>
+        </div>
+
+        <div class="card games">
+          <h3>الألعاب</h3>
+          <div class="games-grid">
+            <button class="game-btn" data-game="riddles">1) ألغاز نصية</button>
+            <button class="game-btn" data-game="guess-number">2) تخمين الرقم</button>
+            <button class="game-btn" data-game="math-ops">3) تحدي العمليات الحسابية</button>
+            <button class="game-btn" data-game="reverse-words">4) عكس الكلمات</button>
+            <button class="game-btn" data-game="sequence">5) تسلسل منطقي</button>
+            <button class="game-btn" data-game="quick-sum">6) الجمع السريع</button>
+            <button class="game-btn" data-game="reverse-translate">7) الترجمة العكسية</button>
+          </div>
+        </div>
+
+        <div class="card admin-only hidden" id="admin-panel-card">
+          <button id="open-admin" class="btn">لوحة المالك</button>
+        </div>
+      </section>
+
+      <!-- Game Runner -->
+      <section id="game-runner" class="hidden">
+        <button id="back-to-dashboard" class="btn link">⬅︎ رجوع</button>
+        <h3 id="game-title"></h3>
+        <div class="timer-wrap">
+          <svg class="progress-ring" width="100" height="100">
+            <circle class="progress-ring__circle" stroke-width="10" fill="transparent" r="45" cx="50" cy="50" />
+          </svg>
+          <div id="timer-text">15</div>
+        </div>
+        <div id="game-content"></div>
+        <div id="game-feedback" class="feedback"></div>
+      </section>
+
+      <!-- Admin -->
+      <section id="admin-section" class="hidden">
+        <button id="close-admin" class="btn link">⬅︎ رجوع</button>
+        <h3>لوحة المالك</h3>
+        <div class="card">
+          <div class="admin-actions">
+            <button id="export-users" class="btn">تصدير المستخدمين CSV</button>
+            <button id="export-withdrawals" class="btn">تصدير السحوبات CSV</button>
+          </div>
+          <div id="admin-data" class="admin-data"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <a href="#" id="contact-link">اتصل بنا</a>
+    </footer>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="modal-title"></h4>
+        <button id="modal-close" class="btn small">إغلاق</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Ad Modal -->
+  <div id="ad-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>إعلان</h4>
+      </div>
+      <div class="ad-body">
+        <iframe id="ad-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts allow-popups allow-forms" src="about:blank"></iframe>
+        <div class="ad-fallback hidden">
+          <p>تعذر تحميل الإعلان داخل التطبيق.</p>
+          <a id="ad-open" target="_blank" rel="noopener">فتح الإعلان</a>
+        </div>
+        <div class="ad-controls">
+          <button id="ad-done" class="btn" disabled>متابعة (10)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
