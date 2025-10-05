@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تحدي المليون الذهبي</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+<!-- webfont removed to avoid render-blocking request -->
 <style>
 body {
-    margin:0; padding:0; font-family:'Roboto',sans-serif;
+    margin:0; padding:0; font-family:system-ui,-apple-system,'Segoe UI','Noto Sans Arabic','Noto Kufi Arabic','Tahoma',Arial,sans-serif;
     background:#0d0d0d; color:#fff; display:flex;
     justify-content:center; align-items:center; height:100vh;
 }
@@ -108,13 +108,13 @@ button {cursor:pointer; transition:0.2s;}
   <button id="start-btn">ابدأ اللعبة</button>
   <button id="music-btn">تشغيل الموسيقى</button>
   <button id="privacy-btn">سياسة الخصوصية</button>
-  <audio id="bg-music" loop>
+  <audio id="bg-music" loop preload="none">
     <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_11d47009a4.mp3?filename=epic-background-music-110695.mp3" type="audio/mpeg">
   </audio>
-  <audio id="correct-sound">
+  <audio id="correct-sound" preload="none">
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_17c621ae2c.mp3?filename=success-1-6297.mp3" type="audio/mpeg">
   </audio>
-  <audio id="wrong-sound">
+  <audio id="wrong-sound" preload="none">
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7c0e31257a.mp3?filename=error-126627.mp3" type="audio/mpeg">
   </audio>
 </div>
@@ -160,163 +160,20 @@ button {cursor:pointer; transition:0.2s;}
   </div>
 </div>
 <script>
-// بيانات الأسئلة المدمجة
-let questions=[
-{"question":"ما هي عاصمة اليابان؟","options":["كيوتو","طوكيو","أوساكا","ناغويا"],"answer":"طوكيو"},
-{"question":"ما هو أسرع حيوان بري؟","options":["الأسد","النمر","الفهد","الغزال"],"answer":"الفهد"},
-{"question":"من هو مكتشف الجاذبية؟","options":["نيوتن","أينشتاين","غاليليو","كوبرنيكوس"],"answer":"نيوتن"},
-{"question":"ما هو الكوكب الأحمر؟","options":["المريخ","الزهرة","الأرض","المشتري"],"answer":"المريخ"},
-{"question":"ما هو أكبر كوكب في المجموعة الشمسية؟","options":["المشتري","زحل","الأرض","المريخ"],"answer":"المشتري"},
-{"question":"ما هو العنصر الكيميائي الذي يرمز له بـ 'Fe'؟","options":["ذهب","حديد","فضة","نحاس"],"answer":"حديد"},
-{"question":"ما هي لغة البرمجة المستخدمة في تطوير تطبيقات أندرويد؟","options":["Python","Java","C++","Ruby"],"answer":"Java"},
-{"question":"ما هو أسرع طائر في العالم؟","options":["الصقر","النعامة","الحمام","النساج"],"answer":"الصقر"},
-{"question":"من كتب رواية 'مئة عام من العزلة'؟","options":["غابرييل غارسيا ماركيز","نجيب محفوظ","تولستوي","هرمان هسه"],"answer":"غابرييل غارسيا ماركيز"},
-{"question":"ما هو العضو المسؤول عن ضخ الدم في جسم الإنسان؟","options":["الرئتين","القلب","الكبد","الكلى"],"answer":"القلب"},
-{"question":"ما هي أكبر صحراء في العالم؟","options":["الصحراء الكبرى","صحراء جوبي","الصحراء العربية","الصحراء الكالاهاري"],"answer":"الصحراء الكبرى"},
-{"question":"ما هو أقوى حاسة لدى الإنسان؟","options":["السمع","البصر","اللمس","الشم"],"answer":"البصر"},
-{"question":"من هو مخترع المصباح الكهربائي؟","options":["توماس إديسون","ألكسندر غراهام بيل","نيكولا تسلا","جيمس وات"],"answer":"توماس إديسون"},
-{"question":"ما هو أسرع حيوان في الماء؟","options":["الدلفين","القرش","سمك أبو سيف","الحوت"],"answer":"سمك أبو سيف"},
-{"question":"ما هو أصغر كوكب في المجموعة الشمسية؟","options":["المريخ","زحل","عطارد","الزهرة"],"answer":"عطارد"},
-{"question":"ما هو أطول نهر في العالم؟","options":["الأمازون","النيل","الميكونغ","الدانوب"],"answer":"النيل"},
-{"question":"ما هو أكبر محيط في العالم؟","options":["المحيط الأطلسي","المحيط الهندي","المحيط الهادئ","المحيط المتجمد الشمالي"],"answer":"المحيط الهادئ"},
-{"question":"من هو أول رائد فضاء؟","options":["نيل آرمسترونغ","يوري غاغارين","باز ألدرين","مايكل كولينز"],"answer":"يوري غاغارين"},
-{"question":"ما هي الدولة التي تمتلك أكبر عدد من البراكين النشطة؟","options":["إندونيسيا","اليابان","الولايات المتحدة","إيطاليا"],"answer":"إندونيسيا"},
-{"question":"ما هو الكوكب المعروف بالكوكب الأزرق؟","options":["الأرض","نبتون","المشتري","زحل"],"answer":"الأرض"},
-{"question":"ما هو الغاز الرئيسي في الغلاف الجوي للأرض؟","options":["الأكسجين","النيتروجين","الهيدروجين","ثاني أكسيد الكربون"],"answer":"النيتروجين"},
-{"question":"من هو مؤسس شركة مايكروسوفت؟","options":["ستيف جوبز","بيل غيتس","مارك زوكربيرغ","إيلون ماسك"],"answer":"بيل غيتس"},
-{"question":"ما هو أسرع حيوان بري في الغابة؟","options":["الفهد","النمر","الأسد","الجاموس"],"answer":"الفهد"},
-{"question":"من هو مؤلف رواية 'الأبله'؟","options":["دوستويفسكي","تولستوي","كامو","هيمنغواي"],"answer":"دوستويفسكي"},
-{"question":"ما هي وحدة قياس شدة التيار الكهربائي؟","options":["فولت","أوم","أمبير","واط"],"answer":"أمبير"},
-{"question":"ما هو الحيوان الذي يطلق عليه ملك الغابة؟","options":["الأسد","النمر","الفهد","الدب"],"answer":"الأسد"},
-{"question":"ما هو أسرع حيوان بري بعد الفهد؟","options":["الغزال","الخيول","النمر","الظباء"],"answer":"الغزال"},
-{"question":"ما هو أكبر عضو في جسم الإنسان؟","options":["القلب","الكبد","الجلد","الرئة"],"answer":"الجلد"},
-{"question":"ما هي لغة البرمجة الأكثر استخداماً في العالم؟","options":["Python","Java","C++","JavaScript"],"answer":"Python"},
-{"question":"من هو مكتشف الميكروبيولوجيا؟","options":["لويس باستور","ألكسندر فليمنج","روبرت كوخ","ماريا كوري"],"answer":"لويس باستور"},
-{"question":"ما هو أسرع حيوان طائر أثناء الغوص؟","options":["الصقر","النساج","الحمامة","النسر"],"answer":"الصقر"},
-{"question":"ما هي أول دولة صنعت القنبلة الذرية؟","options":["ألمانيا","الولايات المتحدة","روسيا","اليابان"],"answer":"الولايات المتحدة"},
-{"question":"ما هو الكوكب الذي يتميز بالحلقات؟","options":["المشتري","زحل","نبتون","أورانوس"],"answer":"زحل"},
-{"question":"من هو العالم الذي اكتشف قانون الجاذبية؟","options":["نيوتن","أينشتاين","غاليليو","كبلر"],"answer":"نيوتن"},
-{"question":"ما هو الغاز المستخدم في إنارة المصابيح القديمة؟","options":["الأكسجين","الهيدروجين","النيون","الميثان"],"answer":"النيون"},
-{"question":"ما هي الدولة صاحبة أكبر عدد سكان في العالم؟","options":["الولايات المتحدة","الهند","الصين","روسيا"],"answer":"الصين"},
-{"question":"ما هو أسرع حيوان في الصحراء؟","options":["الخيول","الفهد","النمر","الظباء"],"answer":"الفهد"},
-{"question":"من هو مكتشف الكهرباء؟","options":["بن فرانكلين","أينشتاين","نيكولا تسلا","توماس إديسون"],"answer":"بن فرانكلين"},
-{"question":"ما هو أكبر قارة في العالم؟","options":["أفريقيا","آسيا","أوروبا","أمريكا الجنوبية"],"answer":"آسيا"},
-{"question":"ما هو أسرع بحر في العالم؟","options":["البحر الأحمر","البحر المتوسط","البحر الكاريبي","المحيط الأطلسي"],"answer":"البحر الأحمر"},
-{"question":"من هو مؤسس شركة تسلا؟","options":["إيلون ماسك","ستيف جوبز","بيل غيتس","مارك زوكربيرغ"],"answer":"إيلون ماسك"},
-{"question":"ما الشيء الذي كلما أخذت منه يكبر؟","options":["الحفرة","الجبل","الماء","النار"],"answer":"الحفرة"},
-{"question":"أنا شيء لديك دائمًا ولكن لا تستطيع رؤيتي، ما أنا؟","options":["الهواء","الظل","الوقت","الصوت"],"answer":"الوقت"},
-{"question":"ما هو الشيء الذي له أسنان ولا يعض؟","options":["المشط","الفأر","الكتاب","المفتاح"],"answer":"المشط"},
-{"question":"شيء تستطيع كسره دون لمسه، ما هو؟","options":["وعد","الزجاج","العظم","العصا"],"answer":"وعد"},
-{"question":"ما هو الشيء الذي يمشي بلا أرجل ويطير بلا جناح؟","options":["الريح","الطائرة","الغزال","القطار"],"answer":"الريح"},
-{"question":"إذا كان لديك وعاء يحتوي على 5 تفاحات وأخذت 3، كم لديك؟","options":["2","3","5","0"],"answer":"3"},
-{"question":"ما الشيء الذي يكتب ولا يقرأ؟","options":["القلم","الكتاب","الكمبيوتر","السبورة"],"answer":"القلم"},
-{"question":"شيء يكسو الأرض ويحافظ على حياتنا، ما هو؟","options":["التراب","العشب","الماء","الرمل"],"answer":"العشب"},
-{"question":"أنا موجود في الليل والنهار، ولكن لا أحد يستطيع الإمساك بي، ما أنا؟","options":["الهواء","الوقت","الشمس","الظل"],"answer":"الوقت"},
-{"question":"ما هو الشيء الذي يتحدث بكل اللغات ولكن لا يصدر صوتًا؟","options":["الكتاب","التلفاز","الهاتف","الكمبيوتر"],"answer":"الكتاب"},
-{"question":"ما الشيء الذي يكسر عند استخدامه؟","options":["البيضة","الزجاج","العصا","الحبل"],"answer":"البيضة"},
-{"question":"ما هو الشيء الذي لا يمكنك رؤيته ولكن يشعر بك الجميع؟","options":["الهواء","الماء","الظل","الحرارة"],"answer":"الهواء"},
-{"question":"شيء يزداد كلما أخذت منه، ما هو؟","options":["الحفرة","الرمل","المال","الوقت"],"answer":"الحفرة"},
-{"question":"ما هو الشيء الذي إذا وضعته في الماء لا يبتل؟","options":["الزيت","الإسفنج","القماش","الحجر"],"answer":"الزيت"},
-{"question":"شيء يتحدث بدون فم، يسمع بدون أذن، ما هو؟","options":["الهاتف","الكتاب","الكمبيوتر","الراديو"],"answer":"الهاتف"},
-{"question":"ما هو الشيء الذي يمكنه حمل كل شيء ولكن لا يستطيع حمل نفسه؟","options":["البحر","الشاحنة","الطائرة","الجسر"],"answer":"البحر"},
-{"question":"شيء له قلب لا ينبض، ما هو؟","options":["الخس","الإنسان","الحيوان","الطائر"],"answer":"الخس"},
-{"question":"ما هو الشيء الذي يكون أمامك دائمًا ولكن لا يمكنك رؤيته؟","options":["المستقبل","الماضي","الهواء","الظل"],"answer":"المستقبل"},
-{"question":"شيء يتقدم للأمام بلا أقدام، ما هو؟","options":["الزمن","السيارة","القطار","الطائرة"],"answer":"الزمن"},
-{"question":"ما هو الشيء الذي له أوراق ولكن ليس شجرة؟","options":["الكتاب","المطبعة","الكمبيوتر","الحائط"],"answer":"الكتاب"},
-{"question":"ما هو العدد الذي إذا ضربته في نفسه يصبح 144؟","options":["11","12","14","10"],"answer":"12"},
-{"question":"إذا كانت الساعة الآن 3 مساءً، كم ستكون الساعة بعد 250 ساعة؟","options":["1 صباحًا","7 مساءً","5 مساءً","10 صباحًا"],"answer":"7 مساءً"},
-{"question":"هناك نهر يحتاج 4 أيام لعبور جسر. كم يوم يحتاج 3 جسور؟","options":["12","8","7","6"],"answer":"12"},
-{"question":"إذا كان مجموع ثلاثة أعداد متتالية هو 51، ما الأعداد؟","options":["16،17،18","15،16،17","14،15،16","17،18،19"],"answer":"16،17،18"},
-{"question":"إذا كان 5 رجال يحتاجون 5 أيام لبناء 5 منازل، كم يوم يحتاج 10 رجال لبناء 10 منازل؟","options":["5","10","20","2"],"answer":"5"},
-{"question":"ما العدد الذي إذا قسمته على 2 ثم أضفت 5 يكون الناتج 12؟","options":["12","14","10","8"],"answer":"14"},
-{"question":"إذا كان لديك 7 صناديق وكل صندوق يحتوي على 7 صناديق أصغر وكل صندوق أصغر يحتوي على 7 كرات، كم كرة لديك؟","options":["343","49","21","7"],"answer":"343"},
-{"question":"ما هو العنصر الأكثر وفرة في الكون؟","options":["الهيدروجين","الأكسجين","النيتروجين","الكربون"],"answer":"الهيدروجين"},
-{"question":"ما هو الكوكب الوحيد الذي يدور عكس دوران باقي الكواكب؟","options":["المريخ","الزهرة","الأرض","عطارد"],"answer":"الزهرة"},
-{"question":"شيء موجود في كل الخلايا ولكنه ليس عضواً، ما هو؟","options":["النواة","البروتين","الميتوكوندريا","البلازما"],"answer":"النواة"},
-{"question":"ما هو الشيء الذي يمكنه كسر الضوء ولكن لا يمكنك رؤيته؟","options":["الزجاج","الماء","العدسة","الهواء"],"answer":"العدسة"},
-{"question":"ما هو أسرع شيء في الكون؟","options":["الضوء","الريح","الصوت","الزمن"],"answer":"الضوء"},
-{"question":"ما هو العضو الذي يعمل بلا توقف طوال حياتك؟","options":["القلب","الكبد","الدماغ","الرئة"],"answer":"القلب"},
-{"question":"ما هو المعدن الأكثر ليونة؟","options":["الذهب","الحديد","النحاس","الألومنيوم"],"answer":"الذهب"},
-{"question":"ما هو الجهاز الذي يستخدم لقياس الضغط الجوي؟","options":["البارومتر","الترمومتر","الهيدرومتر","الميكروسكوب"],"answer":"البارومتر"},
-{"question":"ما هو الشيء الذي يمكنك كسره بدون لمسه؟","options":["الصمت","الزجاج","العصا","الوعد"],"answer":"الصمت"},
-{"question":"ما هو الشيء الذي يسير بلا أرجل ويبكي بلا عيون؟","options":["السحاب","الريح","المطر","الزمن"],"answer":"السحاب"},
-{"question":"ما هو الشيء الذي له مفتاح لكنه لا يفتح أي شيء؟","options":["البيانو","الباب","القفل","السيارة"],"answer":"البيانو"},
-{"question":"ما هو الشيء الذي لا بداية له ولا نهاية؟","options":["الدائرة","الخط","الزمن","الحياة"],"answer":"الدائرة"},
-{"question":"شيء موجود في الماضي والحاضر والمستقبل، ما هو؟","options":["الزمن","المكان","الإنسان","الذاكرة"],"answer":"الزمن"},
-{"question":"ما هو الشيء الذي يكسر عند ذكر اسمه؟","options":["الصمت","الزجاج","العصا","الورقة"],"answer":"الصمت"},
-{"question":"شيء يأتي بلا دعوة ويذهب بلا إذن، ما هو؟","options":["الوقت","الضيف","الريح","الصوت"],"answer":"الوقت"},
-{"question":"ما هو الشيء الذي يمشي بلا أرجل ويغني بلا فم؟","options":["الراديو","الإنسان","الطائر","الكمبيوتر"],"answer":"الراديو"},
-{"question":"شيء له عين بلا رأس، ما هو؟","options":["الإبرة","الإنسان","الطائر","الزجاج"],"answer":"الإبرة"},
-{"question":"ما هو الشيء الذي يمكنه العيش بلا ضوء ولكنه يموت بلا ماء؟","options":["النبات","الإنسان","الحيوان","النار"],"answer":"النبات"},
-{"question":"شيء لا يمكن لمسه لكنه يحرك كل شيء، ما هو؟","options":["الريح","الماء","النار","الهواء"],"answer":"الريح"},
-{"question":"ما هو الشيء الذي يملأ الغرفة بلا أن يحتل مكانًا؟","options":["الضوء","الهواء","الصوت","الظل"],"answer":"الضوء"},
-{"question":"ما هو الشيء الذي يسمع بلا أذن ويتحدث بلا فم؟","options":["الهاتف","الكمبيوتر","الراديو","الكتاب"],"answer":"الهاتف"},
-{"question":"شيء لا حياة له لكنه ينقل الطاقة، ما هو؟","options":["الكهرباء","الماء","الهواء","الزجاج"],"answer":"الكهرباء"},
-{"question":"ما هو الشيء الذي له أرجل ولكنه لا يمشي؟","options":["الكرسي","الإنسان","الطاولة","السرير"],"answer":"الكرسي"},
-{"question":"شيء له رأس وذيل ولكن لا جسد، ما هو؟","options":["العملة","الثعبان","العصا","السمكة"],"answer":"العملة"},
-{"question":"ما هو الشيء الذي له أسنان ولكنه لا يأكل؟","options":["المشط","الأسد","الفأس","المفتاح"],"answer":"المشط"},
-{"question":"شيء له قلب بلا دم، ما هو؟","options":["الخس","الطماطم","البطاطا","الإنسان"],"answer":"الخس"},
-{"question":"ما هو الشيء الذي يمكن أن تراه دائمًا أمامك ولكن لا يمكنك لمسه؟","options":["المستقبل","الهواء","الشمس","الظل"],"answer":"المستقبل"},
-{"question":"ما هو الشيء الذي يتقدم بلا أقدام؟","options":["الزمن","السيارة","القطار","الطائرة"],"answer":"الزمن"},
-{"question":"شيء يظل معنا من الولادة إلى الوفاة، ما هو؟","options":["الوقت","الروح","الدم","العقل"],"answer":"الوقت"},
-{"question":"ما هو الشيء الذي يكتب بلا قلم؟","options":["الكمبيوتر","الكتاب","القلم","الورق"],"answer":"الكمبيوتر"},
-{"question":"ما هو الشيء الذي كلما أخذت منه زاد؟","options":["الحفرة","الرمل","المال","الوقت"],"answer":"الحفرة"},
-{"question":"ما هو الشيء الذي له عين واحدة بلا وجه؟","options":["الإبرة","العدسة","الزر","الثقب"],"answer":"الإبرة"},
-{"question":"ما هو الشيء الذي يمشي بلا أرجل ويظل معنا؟","options":["الزمن","الظل","الريح","الماء"],"answer":"الزمن"},
-{"question":"ما هو الشيء الذي يمكنه العيش بلا ماء ولكنه يموت بلا ضوء؟","options":["النبات","الإنسان","الحيوان","النار"],"answer":"النبات"},
-{"question":"ما هو الشيء الذي يوجد في كل مكان لكنه لا يُرى؟","options":["الهواء","الماء","الظل","اللون"],"answer":"الهواء"},
-{"question":"ما هو أطول جبل في العالم؟","options":["إيفرست","كي 2","كانشينجونغا","ماكالو"],"answer":"إيفرست"},
-{"question":"ما هو الكوكب الأقرب للشمس؟","options":["المريخ","الزهرة","عطارد","الأرض"],"answer":"عطارد"},
-{"question":"من هو مخترع الهاتف؟","options":["توماس إديسون","ألكسندر غراهام بيل","نيكولا تسلا","جيمس وات"],"answer":"ألكسندر غراهام بيل"},
-{"question":"ما هو أسرع حيوان في الغابات الاستوائية؟","options":["النمر","الفهد","الأسد","الغزال"],"answer":"النمر"},
-{"question":"ما هي أكبر بحيرة في العالم؟","options":["بحيرة فيكتوريا","بحيرة سوبيريور","بحيرة بايكال","بحر قزوين"],"answer":"بحر قزوين"},
-{"question":"ما هو أسرع حيوان ثديي بحري؟","options":["الدلفين","الحوت","الفقمة","سمك أبو سيف"],"answer":"سمك أبو سيف"},
-{"question":"ما هي أصغر دولة في العالم؟","options":["موناكو","الفاتيكان","ليختنشتاين","سان مارينو"],"answer":"الفاتيكان"},
-{"question":"ما هو الحيوان الذي ينام واقفاً؟","options":["الحصان","البقرة","الزرافة","النعامة"],"answer":"الحصان"},
-{"question":"ما هو العنصر الكيميائي الذي يرمز له بـ 'Au'؟","options":["ذهب","فضة","نحاس","حديد"],"answer":"ذهب"},
-{"question":"من هو مؤلف رواية 'الجريمة والعقاب'؟","options":["دوستويفسكي","تولستوي","كامو","هيمنغواي"],"answer":"دوستويفسكي"},
-{"question":"ما هو أسرع حيوان في الأنهار؟","options":["التمساح","سمك أبو سيف","الدلفين","القرش"],"answer":"سمك أبو سيف"},
-{"question":"ما هو أكبر نهر في إفريقيا؟","options":["النيجر","النيل","الكونغو","زامبيزي"],"answer":"النيل"},
-{"question":"ما هو الغاز الذي يستخدم في التنفس؟","options":["الأكسجين","الهيدروجين","النيتروجين","ثاني أكسيد الكربون"],"answer":"الأكسجين"},
-{"question":"من هو مؤلف رواية 'الأمير الصغير'؟","options":["أنطوان دو سانت إكزوبيري","جول فيرن","تشارلز ديكنز","مارك توين"],"answer":"أنطوان دو سانت إكزوبيري"},
-{"question":"ما هو الكوكب الذي يُعرف بالكوكب الغازي العملاق؟","options":["المشتري","زحل","نبتون","أورانوس"],"answer":"المشتري"},
-{"question":"ما هو أطول حيوان بري؟","options":["الزرافة","الفيل","الحصان","الظبي"],"answer":"الزرافة"},
-{"question":"ما هي الدولة التي يوجد بها أكبر عدد من الأهرامات؟","options":["مصر","السودان","المكسيك","العراق"],"answer":"السودان"},
-{"question":"ما هو أسرع حيوان في آسيا؟","options":["النمر","الفهد","الأسد","الغزال"],"answer":"النمر"},
-{"question":"ما هو أكبر كوكب غازي في النظام الشمسي؟","options":["المشتري","زحل","نبتون","أورانوس"],"answer":"المشتري"},
-{"question":"ما هو العضو الذي يتحكم بالتوازن في جسم الإنسان؟","options":["الأذن الداخلية","الدماغ","القلب","العين"],"answer":"الأذن الداخلية"},
-{"question":"من هو مكتشف المجرات؟","options":["إدوين هابل","جاليليو","نيوتن","كبلر"],"answer":"إدوين هابل"},
-{"question":"ما هو أسرع حيوان في أوروبا؟","options":["الفهد","الغزال","الظباء","النمر"],"answer":"الفهد"},
-{"question":"ما هو أسرع حيوان في العالم بعد الفهد؟","options":["الغزال","الخيول","النمر","الأسد"],"answer":"الغزال"},
-{"question":"ما هو أسرع حيوان في الغابة المطيرة؟","options":["النمر","الفهد","الأسد","الغزال"],"answer":"النمر"},
-{"question":"من هو مؤسس شركة أبل؟","options":["ستيف جوبز","بيل غيتس","مارك زوكربيرغ","إيلون ماسك"],"answer":"ستيف جوبز"},
-{"question":"ما هي أكبر جزيرة في العالم؟","options":["غرينلاند","مدغشقر","أستراليا","بابوا"],"answer":"غرينلاند"},
-{"question":"ما هو أطول جسر معلق في العالم؟","options":["جسر أكاشي كايكيو","جسر البوابة الذهبية","جسر دانيانغ-كونشانغ","جسر تشارلز"],"answer":"جسر أكاشي كايكيو"},
-{"question":"من هو مكتشف الراديو؟","options":["نيكولا تسلا","ألكسندر غراهام بيل","ماركوني","توماس إديسون"],"answer":"ماركوني"},
-{"question":"ما هو الشيء الذي له أرجل ولكنه لا يمشي؟","options":["الكرسي","الإنسان","الحصان","الطاولة"],"answer":"الكرسي"},
-{"question":"ما هو الشيء الذي كلما أخذت منه يكبر؟","options":["الحفرة","الماء","المال","الوقت"],"answer":"الحفرة"},
-{"question":"ما هو الشيء الذي إذا وضعته في الماء لا يبتل؟","options":["الزيت","الحجر","الخشب","الورق"],"answer":"الزيت"},
-{"question":"ما هو الشيء الذي يكسر عند النطق باسمه؟","options":["الصمت","الزجاج","الوعد","العظم"],"answer":"الصمت"},
-{"question":"ما هو الشيء الذي لا يمكن رؤيته ولكنه يملأ المكان؟","options":["الهواء","الضوء","الظل","الصوت"],"answer":"الهواء"},
-{"question":"ما هو الشيء الذي يرفع بلا أن يحمله أحد؟","options":["الرياح","الدعاء","الماء","الظل"],"answer":"الرياح"},
-{"question":"ما هو الشيء الذي يمشي بلا أرجل ويطير بلا جناح؟","options":["الوقت","الريح","الظل","الصوت"],"answer":"الريح"},
-{"question":"ما هو الشيء الذي له أسنان ولا يعض؟","options":["المشط","الأسد","الفرشاة","المفتاح"],"answer":"المشط"},
-{"question":"ما هو الشيء الذي له قلب ولا ينبض؟","options":["الخس","الإنسان","الحيوان","الكمبيوتر"],"answer":"الخس"},
-{"question":"ما هو الشيء الذي له عين بلا رأس؟","options":["الإبرة","الإنسان","الحيوان","الطائر"],"answer":"الإبرة"},
-{"question":"ما هو الشيء الذي يموت إذا شرب الماء؟","options":["النار","الزيت","الخشب","الورق"],"answer":"النار"},
-{"question":"ما هو الشيء الذي يولد مرة واحدة ويموت مرة واحدة؟","options":["الإنسان","النبات","الحيوان","الشمس"],"answer":"الإنسان"},
-{"question":"ما هو الشيء الذي كلما أخذت منه زاد؟","options":["الحفرة","المال","الماء","الزمن"],"answer":"الحفرة"},
-{"question":"ما هو الشيء الذي يتحدث بلا فم ويسمع بلا أذن؟","options":["الهاتف","الراديو","الكتاب","الكمبيوتر"],"answer":"الهاتف"},
-{"question":"ما هو الشيء الذي لا يمشي إلا إذا ضربته؟","options":["المسمار","الكرة","العصا","الباب"],"answer":"المسمار"},
-{"question":"ما هو الشيء الذي يتقدم دائماً ولا يعود أبداً؟","options":["الزمن","الظل","المستقبل","الريح"],"answer":"الزمن"},
-{"question":"ما هو الشيء الذي كلما زاد نقص؟","options":["العمر","الماء","المال","الوقت"],"answer":"العمر"},
-{"question":"ما هو الشيء الذي يمكنك كسره بلا أن تلمسه؟","options":["الوعد","العظم","الزجاج","العصا"],"answer":"الوعد"},
-{"question":"ما هو الشيء الذي يملك رأساً وذيلًا ولكن لا جسم له؟","options":["العملة","الثعبان","الحيوان","الإنسان"],"answer":"العملة"},
-{"question":"ما هو الشيء الذي يمشي على أربع في الصباح، واثنتين في الظهر، وثلاث في المساء؟","options":["الإنسان","الحصان","السلحفاة","الأسد"],"answer":"الإنسان"}
+// تحميل الأسئلة عند الحاجة فقط لتقليل وقت التحميل الأولي
+let questions = [];
+const fallbackQuestions = [
+  {"question":"ما هي عاصمة اليابان؟","options":["كيوتو","طوكيو","أوساكا","ناغويا"],"answer":"طوكيو"},
+  {"question":"ما هو أسرع حيوان بري؟","options":["الأسد","النمر","الفهد","الغزال"],"answer":"الفهد"},
+  {"question":"ما هو الكوكب الأحمر؟","options":["المريخ","الزهرة","الأرض","المشتري"],"answer":"المريخ"},
+  {"question":"ما هو أطول نهر في العالم؟","options":["الأمازون","النيل","الميكونغ","الدانوب"],"answer":"النيل"},
+  {"question":"ما هو أكبر محيط في العالم؟","options":["الأطلسي","الهندي","الهادئ","المتجمد الشمالي"],"answer":"الهادئ"},
+  {"question":"من هو مؤسس شركة أبل؟","options":["ستيف جوبز","بيل غيتس","مارك زوكربيرغ","إيلون ماسك"],"answer":"ستيف جوبز"}
 ];
-let currentQuestion, scoreIndex=0, timerInterval, timeLeft=30;
-const pointsList=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
-let availableQuestions = [...questions];
+let questionsLoaded = false;
+let currentQuestion, scoreIndex = 0, timerInterval, timeLeft = 30;
+const pointsList = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+let availableQuestions = [];
 
 const startBtn = document.getElementById('start-btn');
 const musicBtn = document.getElementById('music-btn');
@@ -329,25 +186,44 @@ const closePrivacy = document.getElementById('close-privacy');
 
 let isMusicPlaying = false;
 
-startBtn.addEventListener('click', ()=>{
+async function loadQuestionsOnce(){
+  if (questionsLoaded) return;
+  const response = await fetch('questions.json', { cache: 'force-cache' });
+  if (!response.ok) throw new Error('Failed to load questions');
+  questions = await response.json();
+  questionsLoaded = true;
+}
+
+async function initGame(){
+  startBtn.disabled = true;
+  try {
+    await loadQuestionsOnce();
     if(!isMusicPlaying){
-        bgMusic.play();
-        isMusicPlaying = true;
-        musicBtn.textContent = "إيقاف الموسيقى";
+      bgMusic.play();
+      isMusicPlaying = true;
+      musicBtn.textContent = "إيقاف الموسيقى";
     }
     startGame();
-});
+  } catch (e) {
+    console.error(e);
+    questions = fallbackQuestions;
+  } finally {
+    startBtn.disabled = false;
+  }
+}
+
+startBtn.addEventListener('click', initGame);
 
 musicBtn.addEventListener('click', ()=>{
-    if(isMusicPlaying){
-        bgMusic.pause();
-        isMusicPlaying = false;
-        musicBtn.textContent = "تشغيل الموسيقى";
-    } else {
-        bgMusic.play();
-        isMusicPlaying = true;
-        musicBtn.textContent = "إيقاف الموسيقى";
-    }
+  if(isMusicPlaying){
+    bgMusic.pause();
+    isMusicPlaying = false;
+    musicBtn.textContent = "تشغيل الموسيقى";
+  } else {
+    bgMusic.play();
+    isMusicPlaying = true;
+    musicBtn.textContent = "إيقاف الموسيقى";
+  }
 });
 
 // نافذة سياسة الخصوصية
@@ -355,144 +231,164 @@ privacyBtn.addEventListener('click', ()=>{ privacyModal.style.display="flex"; })
 closePrivacy.addEventListener('click', ()=>{ privacyModal.style.display="none"; });
 
 function startGame(){
-    document.getElementById('main-screen').style.display='none';
-    document.getElementById('game-screen').style.display='flex';
-    document.getElementById('lose-screen').style.display='none';
-    document.getElementById('win-screen').style.display='none';
-    scoreIndex=0; 
-    availableQuestions = [...questions];
-    renderPoints(); 
-    enableLifelines();
-    nextQuestion(); 
+  document.getElementById('main-screen').style.display='none';
+  document.getElementById('game-screen').style.display='flex';
+  document.getElementById('lose-screen').style.display='none';
+  document.getElementById('win-screen').style.display='none';
+  scoreIndex = 0;
+  availableQuestions = [...questions];
+  buildPointsList();
+  enableLifelines();
+  nextQuestion();
 }
 
-function renderPoints(){
-    const pointsDiv = document.getElementById('points');
-    pointsDiv.innerHTML = '';
-    for(let i=0; i<pointsList.length; i++){
-        let div = document.createElement('div');
-        div.innerText = `💰 ${pointsList[i]}`;
-        div.className = 'point';
-        if(i == scoreIndex) div.classList.add('current');
-        pointsDiv.appendChild(div);
+function buildPointsList(){
+  const pointsDiv = document.getElementById('points');
+  pointsDiv.textContent = '';
+  const fragment = document.createDocumentFragment();
+  for(let i=0; i<pointsList.length; i++){
+    const div = document.createElement('div');
+    div.textContent = `💰 ${pointsList[i]}`;
+    div.className = 'point';
+    if(i === scoreIndex) div.classList.add('current');
+    fragment.appendChild(div);
+  }
+  pointsDiv.appendChild(fragment);
+}
+
+function updatePointsHighlight(){
+  const pointsDiv = document.getElementById('points');
+  const children = pointsDiv.children;
+  for(let i=0; i<children.length; i++){
+    if(i === scoreIndex){
+      children[i].classList.add('current');
+    } else {
+      children[i].classList.remove('current');
     }
+  }
 }
 
 function startTimer(){
-    timeLeft = 30;
-    document.getElementById('timer').innerText = timeLeft;
-    timerInterval = setInterval(()=>{
-        timeLeft--;
-        document.getElementById('timer').innerText = timeLeft;
-        if(timeLeft<=0){
-            clearInterval(timerInterval);
-            showGameOver();
-        }
-    },1000);
+  timeLeft = 30;
+  document.getElementById('timer').textContent = timeLeft;
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      showGameOver();
+    }
+  },1000);
 }
 
 function stopTimer(){ clearInterval(timerInterval); }
 
 function nextQuestion(){
-    stopTimer();
-    if(scoreIndex >= pointsList.length){
-        showWin();
-        return;
-    }
-    if(availableQuestions.length==0){
-        showWin();
-        return;
-    }
-    const index=Math.floor(Math.random()*availableQuestions.length);
-    currentQuestion=availableQuestions.splice(index,1)[0];
-    document.getElementById('question').innerText=currentQuestion.question;
-    const optionsDiv=document.getElementById('options'); optionsDiv.innerHTML='';
-    currentQuestion.options.forEach(opt=>{
-        let btn=document.createElement('button');
-        btn.innerText = opt;
-        btn.onclick=()=>checkAnswer(opt, btn);
-        optionsDiv.appendChild(btn);
-    });
-    startTimer();
+  stopTimer();
+  if(scoreIndex >= pointsList.length){
+    showWin();
+    return;
+  }
+  if(availableQuestions.length === 0){
+    showWin();
+    return;
+  }
+  const index = Math.floor(Math.random()*availableQuestions.length);
+  currentQuestion = availableQuestions.splice(index,1)[0];
+  document.getElementById('question').textContent = currentQuestion.question;
+  const optionsDiv = document.getElementById('options');
+  optionsDiv.textContent = '';
+  const fragment = document.createDocumentFragment();
+  currentQuestion.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.onclick = ()=>checkAnswer(opt, btn);
+    fragment.appendChild(btn);
+  });
+  optionsDiv.appendChild(fragment);
+  startTimer();
 }
 
 function checkAnswer(ans,btn){
-    stopTimer();
-    const buttons = document.querySelectorAll('#options button');
-    buttons.forEach(b=>b.disabled=true);
-    if(ans===currentQuestion.answer){
-        btn.classList.add("correct");
-        correctSound.play();
-        scoreIndex++;
-        renderPoints();
-        setTimeout(nextQuestion, 1000);
-    } else {
-        btn.classList.add("wrong");
-        wrongSound.play();
-        buttons.forEach(b=>{
-            if(b.innerText===currentQuestion.answer){
-                b.classList.add("correct");
-            }
-        });
-        setTimeout(showGameOver, 1500);
-    }
+  stopTimer();
+  const buttons = document.querySelectorAll('#options button');
+  buttons.forEach(b=>b.disabled=true);
+  if(ans===currentQuestion.answer){
+    btn.classList.add("correct");
+    correctSound.play();
+    scoreIndex++;
+    updatePointsHighlight();
+    setTimeout(nextQuestion, 1000);
+  } else {
+    btn.classList.add("wrong");
+    wrongSound.play();
+    buttons.forEach(b=>{
+      if(b.textContent===currentQuestion.answer){
+        b.classList.add("correct");
+      }
+    });
+    setTimeout(showGameOver, 1500);
+  }
 }
 
 function enableLifelines(){
-    ['fifty-btn','audience-btn','friend-btn','switch-btn'].forEach(id=>{
-        const btn=document.getElementById(id);
-        btn.disabled=false; btn.classList.remove('used');
-    });
+  ['fifty-btn','audience-btn','friend-btn','switch-btn'].forEach(id=>{
+    const btn=document.getElementById(id);
+    btn.disabled=false; btn.classList.remove('used');
+  });
 }
 
 function useFifty(){
-    const buttons = document.querySelectorAll('#options button');
-    let disabledCount=0;
-    buttons.forEach(b=>{
-        if(b.innerText===currentQuestion.answer) return;
-        if(disabledCount<2){ b.disabled=true; b.style.opacity=0.3; disabledCount++; }
-    });
-    const btn = document.getElementById('fifty-btn'); btn.disabled=true; btn.classList.add('used');
+  const buttons = document.querySelectorAll('#options button');
+  let disabledCount=0;
+  buttons.forEach(b=>{
+    if(b.textContent===currentQuestion.answer) return;
+    if(disabledCount<2){ b.disabled=true; b.style.opacity=0.3; disabledCount++; }
+  });
+  const btn = document.getElementById('fifty-btn'); btn.disabled=true; btn.classList.add('used');
 }
 
 function useAudience(){
-    const buttons = document.querySelectorAll('#options button');
-    const correctBtn = Array.from(buttons).find(b=>b.innerText===currentQuestion.answer);
+  const buttons = document.querySelectorAll('#options button');
+  const correctBtn = Array.from(buttons).find(b=>b.textContent===currentQuestion.answer);
+  if (correctBtn){
     correctBtn.style.background = 'linear-gradient(145deg,#ffdd57,#ffc107)';
     correctBtn.style.color='#000';
-    const btn = document.getElementById('audience-btn'); btn.disabled=true; btn.classList.add('used');
+  }
+  const btn = document.getElementById('audience-btn'); btn.disabled=true; btn.classList.add('used');
 }
 
-
 function useFriend(){
-    const buttons = document.querySelectorAll('#options button');
-    const correctBtn = Array.from(buttons).find(b=>b.innerText===currentQuestion.answer);
+  const buttons = document.querySelectorAll('#options button');
+  const correctBtn = Array.from(buttons).find(b=>b.textContent===currentQuestion.answer);
+  if (correctBtn){
     correctBtn.style.background = 'linear-gradient(145deg,#57ddff,#57cfff)';
     correctBtn.style.color='#000';
-    const btn = document.getElementById('friend-btn'); btn.disabled=true; btn.classList.add('used');
+  }
+  const btn = document.getElementById('friend-btn'); btn.disabled=true; btn.classList.add('used');
 }
 
 function useSwitch(){
-    nextQuestion();
-    const btn = document.getElementById('switch-btn'); btn.disabled=true; btn.classList.add('used');
+  nextQuestion();
+  const btn = document.getElementById('switch-btn'); btn.disabled=true; btn.classList.add('used');
 }
 
 function showGameOver(){
-    document.getElementById('game-screen').style.display='none';
-    document.getElementById('lose-screen').style.display='flex';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('lose-screen').style.display='flex';
 }
 
 function showWin(){
-    document.getElementById('game-screen').style.display='none';
-    document.getElementById('win-screen').style.display='flex';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('win-screen').style.display='flex';
 }
 
 function goToMain(){
-    stopTimer();
-    document.getElementById('main-screen').style.display='flex';
-    document.getElementById('game-screen').style.display='none';
-    document.getElementById('lose-screen').style.display='none';
-    document.getElementById('win-screen').style.display='none';
+  stopTimer();
+  document.getElementById('main-screen').style.display='flex';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('lose-screen').style.display='none';
+  document.getElementById('win-screen').style.display='none';
 }
 </script>
 </body>
