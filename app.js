@@ -25,7 +25,13 @@ const WITHDRAW_MIN_POINTS = 1200;
 const WITHDRAW_METHODS = ["Vodafone Cash", "Payeer", "Binance"];
 const WITHDRAW_FEE = 2; // sample
 
-const TODAY = new Date().toISOString().split("T")[0];
+// Dynamic date helper; always reflects local calendar date
+function todayStr(){
+  const now = new Date();
+  const tzOffsetMs = now.getTimezoneOffset() * 60000;
+  const local = new Date(now.getTime() - tzOffsetMs);
+  return local.toISOString().split('T')[0];
+}
 
 // State
 let currentUser = null; // { id, username, balance, Status, HasWithdrawnBefore, Referral code, Blocked on }
@@ -100,7 +106,7 @@ async function listAll(tableId){
   return out;
 }
 
-function todayStr(){ return TODAY; }
+// removed static TODAY usage; using dynamic todayStr()
 
 // Limits and tracking
 async function trackAction(userId, action, count=1){
@@ -252,7 +258,10 @@ async function refreshUser(){
   $('#daily-cap').textContent = session.cap;
   $('#ads-today').textContent = session.adsToday;
   $('#referral-code').value = currentUser['Referral code'] || '';
-  $('#withdraw-btn').disabled = !canWithdraw();
+  const canW = canWithdraw();
+  $('#withdraw-btn').disabled = !canW;
+  $('#withdraw-btn').classList.toggle('hidden', !canW);
+  updateEstimatedValues();
   updateAdsCtaVisibility();
 }
 
@@ -504,6 +513,7 @@ function setRingProgress(p){ // p in [0,1]
 
 async function startLevel(gameName){
   gameState.name = gameName;
+  gameState.level = 1;
   gameState.timeLeft = 15;
   $('#dashboard').classList.add('hidden');
   $('#game-runner').classList.remove('hidden');
@@ -522,6 +532,7 @@ function endLevelWin(){
   showAdModal(5).then(async ()=>{
     const granted = await awardPoints(POINTS_PER_LEVEL);
     $('#game-feedback').textContent = granted>0 ? `+${granted} نقاط` : 'تم بلوغ حد اليوم';
+    gameState.level += 1;
     setTimeout(()=> nextLevel(), 600);
   });
 }
@@ -658,7 +669,7 @@ async function awardPoints(points){
   if (grant > 0){
     // record progress
     await api(`table/${TABLES.progress}/?user_field_names=true`, { method:'POST', body:{
-      User: currentUser.id, 'Game name': labelForGame(gameState.name), 'Current level': 1, 'Points Earned': grant, Date: todayStr()
+      User: currentUser.id, 'Game name': labelForGame(gameState.name), 'Current level': gameState.level, 'Points Earned': grant, Date: todayStr()
     }});
     await api(`table/${TABLES.users}/${currentUser.id}/?user_field_names=true`, { method:'PATCH', body:{ balance: (currentUser.balance||0) + grant } });
     session.pointsToday += grant;
@@ -683,3 +694,8 @@ async function awardPoints(points){
     }, 300);
   } catch{}
 })();
+
+// Derived UI helpers
+function updateEstimatedValues(){
+  // placeholder for any derived fields (future UI)
+}
