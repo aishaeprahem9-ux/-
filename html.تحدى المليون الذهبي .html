@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تحدي المليون الذهبي</title>
 <!-- webfont removed to avoid render-blocking request -->
+<link rel="dns-prefetch" href="//cdn.pixabay.com">
+<link rel="preconnect" href="https://cdn.pixabay.com" crossorigin>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d0d0d">
 <style>
 body {
     margin:0; padding:0; font-family:system-ui,-apple-system,'Segoe UI','Noto Sans Arabic','Noto Kufi Arabic','Tahoma',Arial,sans-serif;
@@ -230,6 +234,16 @@ musicBtn.addEventListener('click', ()=>{
 privacyBtn.addEventListener('click', ()=>{ privacyModal.style.display="flex"; });
 closePrivacy.addEventListener('click', ()=>{ privacyModal.style.display="none"; });
 
+// Prefetch questions when the browser is idle to improve first-play latency
+document.addEventListener('DOMContentLoaded', () => {
+  const prefetch = () => loadQuestionsOnce().catch(() => {});
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(prefetch, { timeout: 3000 });
+  } else {
+    setTimeout(prefetch, 2000);
+  }
+});
+
 function startGame(){
   document.getElementById('main-screen').style.display='none';
   document.getElementById('game-screen').style.display='flex';
@@ -389,6 +403,13 @@ function goToMain(){
   document.getElementById('game-screen').style.display='none';
   document.getElementById('lose-screen').style.display='none';
   document.getElementById('win-screen').style.display='none';
+}
+
+// Register service worker for offline caching
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
 }
 </script>
 </body>

@@ -1,0 +1,11 @@
+{
+  "name": "تحدي المليون الذهبي",
+  "short_name": "المليون",
+  "start_url": "./html.تحدى المليون الذهبي .html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "lang": "ar",
+  "dir": "rtl"
+}
